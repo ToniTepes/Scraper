@@ -4,10 +4,21 @@ var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 var moment = require("moment");
+var mongojs = require("mongojs");
 
 // Scraping tools
 var cheerio = require("cheerio");
-var request = require("request");
+//var request = require("request");
+var axios = require('axios');
+
+// // Database configuration
+// var databaseUrl = "Article";
+// var collections = ["articles"];
+// // Hook mongojs configuration to the db variable
+// var db = mongojs(databaseUrl, collections);
+// db.on("error", function(error) {
+//   console.log("Database Error:", error);
+// });
 
 // Require all models
 var db = require("./models");
@@ -22,15 +33,20 @@ var app = express();
 app.use(logger("dev"));
 // Use body-parser for handling form submissions
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 // Use express.static to serve the public folder as a static directory
 app.use(express.static("public"));
 
 // Set mongoose to leverage built in JavaScript ES6 Promises
 // Connect to the Mongo DB
-// mongoose.Promise = Promise;
+mongoose.Promise = Promise;
 // mongoose.connect("mongodb://localhost/mongoscraper", {
 //   useMongoClient: true
 // });
+
+mongoose.connect("mongodb://localhost/unit18Populater", {
+  useMongoClient: true
+});
 
 // Routes
 app.get("/", function(req, res) {
@@ -40,9 +56,9 @@ app.get("/", function(req, res) {
 // A GET route for scraping the invision blog
 app.get("/scrape", function(req, res) {
   
-  request("https://www.invisionapp.com/blog", function(error, response, html) {
+  axios.get("https://home.cern/news", function(error, response) {
     
-    var $ = cheerio.load(html);
+    var $ = cheerio.load(response.data);
 
     $(".title-link").each(function(i, element) {
       
@@ -50,6 +66,8 @@ app.get("/scrape", function(req, res) {
       var link = $(element).attr("href");
       var snippet = $(element).siblings('p').text().trim();
       var articleCreated = moment().format("YYYY MM DD hh:mm:ss");
+      
+      //console.log(element);
 
       var result = {
         title: title,
