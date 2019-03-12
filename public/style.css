@@ -1,3 +1,11 @@
+body {
+  background-image: url("https://cds.cern.ch/record/1477949/files/ev059HR_3D.png?subformat=icon-1440");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: 100% 100%;
+}
+
 .new-article-btn {
   margin-top: 10px;
 }
